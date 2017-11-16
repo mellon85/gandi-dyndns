@@ -34,7 +34,7 @@ def should_update(domain, subdomain):
         log.exception('should_update')
     return None
 
-def update_dns(public_ip, key, domain, subdomain):
+def update_dns(public_ip, uuid, key, domain, subdomain):
     url = endpoint + '/zones/' + uuid + '/records/' + subdomain + '/A'
     u = requests.put(url,
         json={
@@ -55,7 +55,7 @@ def main():
         uuid = get_uuid(conf['key'], conf['domain'])
     ip = should_update(conf['domain'], conf['subdomain'])
     if ip:
-        update_dns(ip, **conf)
+        update_dns(ip, uuid, **conf)
 
 if __name__ == '__main__':
     main()
