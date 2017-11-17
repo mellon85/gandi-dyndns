@@ -5,7 +5,8 @@ import pif
 import requests
 import socket
 
-endpoint = 'https://dns.api.gandi.net/api/v5'
+gandi_host = 'dns.api.gandi.net'
+endpoint = 'https://'+gandi_host+'/api/v5'
 
 logging.basicConfig(
     format='%(asctime)s %(message)s',
@@ -48,7 +49,17 @@ def update_dns(public_ip, uuid, key, domain, subdomain):
     log.info(u.status_code)
     u.raise_for_status()
 
+def is_gandi_reachable():
+    try:
+        socket.getaddrinfo(gandi_host, 0)
+    except:
+        return False
+    return True
+
 def main():
+    if not is_gandi_reachable():
+        log.ingo('Gandi Unreachable')
+        return
     with open('conf.json') as conf_file:
         conf = json.load(conf_file)
     # to avoid the bad ones more vailable in pif.utils.list_checkers()
