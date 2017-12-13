@@ -58,7 +58,7 @@ def is_gandi_reachable():
 
 def main():
     if not is_gandi_reachable():
-        log.ingo('Gandi Unreachable')
+        log.info('Gandi Unreachable')
         return
     with open('conf.json') as conf_file:
         conf = json.load(conf_file)
