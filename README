@@ -14,3 +14,5 @@ in with your Gandi key and secret.
 and save it as conf.json
 Call the script regularly. It will try to avoid contacting external services as
 much as possible.
+Subdomain can also be a list of subdomains to set.
+

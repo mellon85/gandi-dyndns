@@ -64,7 +64,12 @@ def main():
         conf = json.load(conf_file)
     # to avoid the bad ones more vailable in pif.utils.list_checkers()
         uuid = get_uuid(conf['key'], conf['domain'])
-    ip = should_update(conf['domain'], conf['subdomain'])
+
+    subdomains = conf['subdomain']
+    if isinstance(subdomains, str):
+        subdomains = [subdomains]
+    for subdomain in subdomains:
+        ip = should_update(conf['domain'], subdomain)
     if ip:
         update_dns(ip, uuid, **conf)
 
