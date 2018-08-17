@@ -8,19 +8,19 @@ import pif
 import requests
 
 gandi_host = 'dns.api.gandi.net'
-endpoint = 'https://' + gandi_host + '/api/v5'
+endpoint = 'https://'+gandi_host+'/api/v5'
 
 logging.basicConfig(
-    level=logging.INFO,
     format='%(asctime)s %(levelname)s %(message)s',
+    level=logging.INFO
 )
 log = logging.getLogger()
 
 def get_uuid(api_key, domain):
-    url = endpoint + '/domains/' + domain
-    resp = requests.get(url, headers={'X-Api-Key': api_key})
-    resp.raise_for_status()
-    return resp.json()['zone_uuid']
+        url = endpoint + '/domains/' + domain
+        resp = requests.get(url, headers={'X-Api-Key': api_key})
+        resp.raise_for_status()
+        return resp.json()['zone_uuid']
 
 def should_update(domain, subdomain):
     try:
@@ -33,11 +33,9 @@ def should_update(domain, subdomain):
         log.debug('public ip: %s', public_ip)
 
         if old_ip != public_ip:
-            log.info('should update to %s', public_ip)
             return public_ip
     except:
-        log.exception("couldn't resolve ip")
-    log.info('data is up to date for %s %s', domain, subdomain)
+        log.exception('should_update')
     return None
 
 def update_dns(public_ip, uuid, key, domain, subdomain):
@@ -51,7 +49,7 @@ def update_dns(public_ip, uuid, key, domain, subdomain):
             'X-Api-Key': key
         }
     )
-    log.info('%s %s %s', domain, subdomain, u.status_code)
+    log.info(u.status_code)
     u.raise_for_status()
 
 def is_gandi_reachable():
@@ -62,13 +60,12 @@ def is_gandi_reachable():
     return True
 
 def main():
-    log.info('starting sync')
     if not is_gandi_reachable():
         log.info('Gandi Unreachable')
         return
     with open('conf.json') as conf_file:
         conf = json.load(conf_file)
-        # to avoid the bad ones more vailable in pif.utils.list_checkers()
+    # to avoid the bad ones more vailable in pif.utils.list_checkers()
         uuid = get_uuid(conf['key'], conf['domain'])
 
     subdomains = conf['subdomain']
