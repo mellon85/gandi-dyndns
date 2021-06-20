@@ -22,16 +22,19 @@ type configuration struct {
 }
 
 func processEntry(subdomain string, domain string, apikey string, externalIP string, uuid string) {
-	log.Print("processing " + subdomain)
 	hostname := subdomain + "." + domain
+	log.Printf("Processing %s", hostname)
 	ips, err := net.LookupHost(hostname)
 	if err != nil {
+		log.Printf("Hostname not found %s", hostname)
 		return
 	}
 	for _, ip := range ips {
 		if ip == externalIP {
-			log.Printf("found %s as %s, no need to update", hostname, ip)
+			log.Printf("Found %s as %s, no need to update", hostname, ip)
 			return
+		} else {
+			log.Printf("Found %s as %s, needs to be updated", hostname, ip)
 		}
 	}
 
@@ -74,7 +77,7 @@ func getUUID(apiKey string, domain string) (string, error) {
 	}
 
 	if reply.Code != 0 {
-		log.Fatal(string(reply.Code) + " " + reply.Message)
+		log.Fatalf("%+v %s", reply.Code, reply.Message)
 		return "blop", nil // XXX need proper error
 	}
 
