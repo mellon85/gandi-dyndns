@@ -2,4 +2,4 @@ module gandi-dyndns
 
 go 1.12
 
-require github.com/GlenDC/go-external-ip v0.0.0-20170425150139-139229dcdddd
+require github.com/glendc/go-external-ip v0.1.0

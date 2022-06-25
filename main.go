@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"sync"
 
-	externalip "github.com/GlenDC/go-external-ip"
+	externalip "github.com/glendc/go-external-ip"
 )
 
 const gandiHost = "https://dns.api.gandi.net"
