@@ -17,7 +17,6 @@ const endpoint = gandiHost + "/api/v5"
 
 type configuration struct {
 	Key       string   `json:"key"`
-	Domain    string   `json:"domain"`
 	Subdomain []string `json:"subdomain"`
 }
 
@@ -90,7 +89,7 @@ func main() {
 		log.Fatal("No configuration file")
 		return
 	}
-	var hosts configuration
+	hosts := make(map[string]configuration)
 	err = json.Unmarshal(confFile, &hosts)
 	if err != nil {
 		log.Fatal("Failed to read configuration file")
@@ -103,18 +102,29 @@ func main() {
 	if err == nil {
 		log.Print("external ip: ", externalIP.String())
 	}
-	uuid, err := getUUID(hosts.Key, hosts.Domain)
+	eIP := externalIP.String()
+	code := 0
 
 	var wg sync.WaitGroup
-	for _, subdomain := range hosts.Subdomain {
-		wg.Add(1)
-		go func(subdomain string) {
-			defer wg.Done()
-			processEntry(subdomain, hosts.Domain, hosts.Key, externalIP.String(), uuid)
-		}(subdomain)
+	for domain, configuration := range hosts {
+		uuid, err := getUUID(configuration.Key, domain)
+		if err != nil {
+			log.Fatal("Failed to update " + domain)
+			code += 1
+		}
+		for _, subdomain := range configuration.Subdomain {
+			wg.Add(1)
+			go func(subdomain string) {
+				defer wg.Done()
+				processEntry(subdomain, domain, configuration.Key, eIP, uuid)
+			}(subdomain)
+		}
 	}
 	wg.Wait()
 
+	if code > 0 {
+		panic("Failed to update a domain")
+	}
 }
 
 func query(url string, apiKey string, body []byte) ([]byte, error) {

@@ -1,6 +1,7 @@
 {
+  "domain": {
     "key": "",
     "secret": "",
-    "domain": "",
     "subdomain": ""
+  }
 }
